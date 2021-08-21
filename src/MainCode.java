@@ -1,5 +1,5 @@
 /** MainCode - creates an instance of a simple flashcard program
- * @author Calculus5000
+ * @author Calculus5000, Caleb Copeland
  * */
 public class MainCode {
     public static void main(String[] args){
@@ -7,7 +7,6 @@ public class MainCode {
         q.go();
     }
     private void go(){
-        QuizCardBuilder quizCardBuilder = new QuizCardBuilder(new Deck());
-        quizCardBuilder.build();
+        new QuizCardBuilder(new Deck());
     }
 }

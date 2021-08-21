@@ -9,11 +9,11 @@ import java.util.Collections;
 import java.util.List;
 
 /** Deck - This class deals with a collection of QuizCards
- * @author Calculus5000
+ * @author Calculus5000, Caleb Copeland
  * */
 public class Deck {
     private File file;
-    private List<QuizCard> quizCardList = new ArrayList<>();
+    private final List<QuizCard> quizCardList = new ArrayList<>();
     private String fileName = "Untitled";
     private boolean isModified;
     private boolean isTestRunning;
@@ -119,20 +119,32 @@ public class Deck {
         this.fileName = fileName;
     }
 
-    void setIsModified(boolean newValue){
+    public void setIsModified(boolean newValue){
         isModified = newValue;
     }
 
-    void setIsTestRunning(boolean newValue){
+    public void setIsTestRunning(boolean newValue){
         isTestRunning = newValue;
     }
 
-    void setNumCorrect(int newValue){
-        numCorrect = newValue;
+    public void incrementNumCorrect()
+    {
+        numCorrect += 1;
     }
 
-    void setNumWrong(int newValue){
-        numWrong = newValue;
+    public void resetNumCorrect()
+    {
+        numCorrect = 0;
+    }
+
+    public void resetNumWrong()
+    {
+        numWrong = 0;
+    }
+
+    public void incrementNumWrong()
+    {
+        numWrong += 1;
     }
 
 }

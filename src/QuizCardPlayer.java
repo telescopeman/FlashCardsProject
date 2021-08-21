@@ -8,7 +8,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 /**
  * QuizCardPlayer - This class allows the user to test themselves using a specific Deck of QuizCards.
  *
- * @author Calculus5000, abuzittin gillifirca
+ * @author Calculus5000, abuzittin gillifirca, Caleb Copeland
  */
 public class QuizCardPlayer {
     private static final Dimension FRAME_SIZE = new Dimension(300, 300);
@@ -23,14 +23,16 @@ public class QuizCardPlayer {
     private JPanel contentPane;
     private JTextArea textArea;
 
-    private QuizCardBuilder quizCardBuilder;
+    private final QuizCardBuilder quizCardBuilder;
 
 
-    public QuizCardPlayer(Deck deck) {
+    public QuizCardPlayer(Deck deck, QuizCardBuilder quizCardBuilder) {
         this.deck = deck;
+        this.quizCardBuilder = quizCardBuilder; // registers the callback
+        build();
     }
 
-    void build() {
+    public void build() {
         SwingUtilities.invokeLater(
                 () -> {
                     buildFrame();
@@ -50,13 +52,13 @@ public class QuizCardPlayer {
 
         correctButton = new JButton("Right");
         correctButton.addActionListener(ev -> {
-            deck.setNumCorrect(deck.getNumCorrect() + 1);
+            deck.incrementNumCorrect();
             invokeLater(this::showNextCardOrResults);
         });
         correctButton.setVisible(false);
         wrongButton = new JButton("Wrong");
         wrongButton.addActionListener(ev -> {
-            deck.setNumWrong(deck.getNumWrong() + 1);
+            deck.incrementNumWrong();
             invokeLater(this::showNextCardOrResults);
         });
         wrongButton.setVisible(false);
@@ -112,8 +114,8 @@ public class QuizCardPlayer {
     private void closeFrame() {
         SwingUtilities.invokeLater(frame::dispose);
         deck.setIsTestRunning(false);
-        deck.setNumCorrect(0);
-        deck.setNumWrong(0);
+        deck.resetNumCorrect();
+        deck.resetNumWrong();
         quizCardBuilder.setTextAreaEditability(true);
         quizCardBuilder.getQuestionText().requestFocusInWindow();
     }
@@ -122,14 +124,6 @@ public class QuizCardPlayer {
         frame.setSize(FRAME_SIZE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-
-    /**
-     * registerQuizCardBuilder - A callback function that allows an instance of QuizCardPlayer to pass info back to
-     * the specified instance of QuizCardBuilder.
-     */
-    void registerQuizCardBuilder(QuizCardBuilder newQuizCardBuilder) {
-        quizCardBuilder = newQuizCardBuilder;
     }
 
     /**

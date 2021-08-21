@@ -3,15 +3,14 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /** QuizCardBuilder - This class allows the user to create, edit and save a Deck of QuizCards.
- * @author Calculus5000
+ * @author Calculus5000, Caleb Copeland
  * */
 public class QuizCardBuilder {
     private Deck deck;
     private JButton button;
-    private JFileChooser fileChooser = new JFileChooser();
+    private final JFileChooser fileChooser = new JFileChooser();
     private JFrame frame;
-    private JTextArea answerText = new JTextArea();
-    private JTextArea questionText = new JTextArea();
+    private final JTextArea answerText = new JTextArea(), questionText = new JTextArea();
     private JPanel panel;
 
     private QuizCardPlayer quizCardPlayer;
@@ -20,16 +19,6 @@ public class QuizCardBuilder {
     public QuizCardBuilder(Deck deck) {
         this.deck = deck;
         createQuizCardPlayer();
-    }
-
-    /** addCard - adds a QuizCard to the current Deck. */
-    private void addCard(){
-        deck.addQuizCard(getQuestionText().getText(), getAnswerText().getText());
-        setQuestionText(null);
-        setAnswerText(null);
-    }
-
-    void build() {
         SwingUtilities.invokeLater(
                 () -> {
                     buildFrame();
@@ -44,7 +33,13 @@ public class QuizCardBuilder {
                     questionText.requestFocusInWindow();
                 }
         );
+    }
 
+    /** addCard - adds a QuizCard to the current Deck. */
+    private void addCard(){
+        deck.addQuizCard(getQuestionText().getText(), getAnswerText().getText());
+        setQuestionText(null);
+        setAnswerText(null);
     }
 
     private void buildButtonPanel() {
@@ -138,8 +133,7 @@ public class QuizCardBuilder {
     /** createQuizCardPlayer - safely creates an instance of QuizCardPlayer, whilst allowing QuizCardPlayer to
      * have a callback */
     private void createQuizCardPlayer(){
-        quizCardPlayer = new QuizCardPlayer(deck);
-        quizCardPlayer.registerQuizCardBuilder(this);   // registers the callback
+        quizCardPlayer = new QuizCardPlayer(deck,this); // registers the callback
     }
 
     private void displayFrame() {
@@ -211,7 +205,7 @@ public class QuizCardBuilder {
         SwingUtilities.invokeLater(() -> answerText.setText(text));
     }
 
-    void setTextAreaEditability(boolean isEditable){
+    public void setTextAreaEditability(boolean isEditable){
         questionText.setEditable(isEditable);
         answerText.setEditable(isEditable);
         button.setEnabled(isEditable);
@@ -229,21 +223,21 @@ public class QuizCardBuilder {
 
 
     // ACTIONS
-    private Action Exit = new AbstractAction("Quit"){
+    private final Action Exit = new AbstractAction("Quit"){
         @Override
         public void actionPerformed(ActionEvent ev){
             close();
         }
     };
 
-    private Action Open = new AbstractAction("Open"){
+    private final Action Open = new AbstractAction("Open"){
         @Override
         public void actionPerformed(ActionEvent ev){
             openFile();
         }
     };
 
-    private Action Play = new AbstractAction("Begin test"){
+    private final Action Play = new AbstractAction("Begin test"){
         @Override
         public void actionPerformed(ActionEvent ev){
             // Allows the user to open a file if no file is already open
@@ -266,21 +260,21 @@ public class QuizCardBuilder {
         }
     };
 
-    private Action Save = new AbstractAction("Save"){
+    private final Action Save = new AbstractAction("Save"){
         @Override
         public void actionPerformed(ActionEvent ev){
             save();
         }
     };
 
-    private Action SaveAs = new AbstractAction("Save as...") {
+    private final Action SaveAs = new AbstractAction("Save as...") {
         @Override
         public void actionPerformed(ActionEvent e) {
             saveAs();
         }
     };
 
-    private Action ShuffleDeck = new AbstractAction("Shuffle deck"){
+    private final Action ShuffleDeck = new AbstractAction("Shuffle deck"){
         @Override
         public void actionPerformed(ActionEvent ev){
             deck.shuffle();
