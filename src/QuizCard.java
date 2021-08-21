@@ -1,5 +1,6 @@
 /** QuizCard - Class for one flash card
  * @author Calculus5000
+ * @since August 21 2021
  * */
 public class QuizCard {
     private String question;

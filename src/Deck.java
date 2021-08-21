@@ -10,6 +10,7 @@ import java.util.List;
 
 /** Deck - This class deals with a collection of QuizCards
  * @author Calculus5000, Caleb Copeland
+ * @since August 21 2021
  * */
 public class Deck {
     private File file;

@@ -1,29 +1,34 @@
 import javax.swing.*;
 import java.awt.*;
-
 import static javax.swing.SwingUtilities.invokeLater;
 
 /**
  * QuizCardPlayer - This class allows the user to test themselves using a specific Deck of QuizCards.
  *
  * @author Calculus5000, abuzittin gillifirca, Caleb Copeland
+ * @since August 21 2021
  */
-public class QuizCardPlayer extends ElementUI{
+public abstract class QuizCardPlayer extends ElementUI{
 
+    protected JTextArea textArea;
     private int deckIndex;
-    private boolean isAnswerShown;
-    private JButton correctButton, showAnswerButton, wrongButton;
-    private JTextArea textArea;
+    protected boolean isAnswerShown;
+    protected JButton submitButton;
+
     private final Dimension FRAME_SIZE = new Dimension(300, 300);
     private final QuizCardBuilder quizCardBuilder;
+    private final String submit_text;
 
-    public QuizCardPlayer(Deck deck, QuizCardBuilder quizCardBuilder) {
-        super("Quiz Card Player", new Dimension(200, 200));
+    public QuizCardPlayer(Deck deck, QuizCardBuilder quizCardBuilder,String text, String submit_text) {
+        super(text, new Dimension(200, 200));
         this.deck = deck;
         this.quizCardBuilder = quizCardBuilder; // registers the callback
-        //build();
+        this.submit_text = submit_text;
     }
 
+    /**
+     * Sets up and shows.
+     */
     public void build() {
         SwingUtilities.invokeLater(
                 () -> {
@@ -33,35 +38,23 @@ public class QuizCardPlayer extends ElementUI{
                     buildTextArea();
                     buildButtonPanel();
                     displayFrame();
-                    showAnswerButton.requestFocusInWindow();
+                    submitButton.requestFocusInWindow();
                 }
         );
     }
 
-    private void buildButtonPanel() {
-        showAnswerButton = new JButton("Show answer");
-        showAnswerButton.addActionListener(ev -> invokeLater(getAction()));
-
-        correctButton = new JButton("Right");
-        correctButton.addActionListener(ev -> {
-            deck.incrementNumCorrect();
-            invokeLater(this::showNextCardOrResults);
-        });
-        correctButton.setVisible(false);
-        wrongButton = new JButton("Wrong");
-        wrongButton.addActionListener(ev -> {
-            deck.incrementNumWrong();
-            invokeLater(this::showNextCardOrResults);
-        });
-        wrongButton.setVisible(false);
-
+    private void buildButtonPanel()
+    {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(showAnswerButton);
-        buttonPanel.add(correctButton);
-        buttonPanel.add(wrongButton);
+        submitButton = new JButton(submit_text);
+        submitButton.addActionListener(ev -> invokeLater(getAction()));
+        buttonPanel.add(submitButton);
+        buildUniqueButtons(buttonPanel);
         buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         contentPane.add(BorderLayout.SOUTH, buttonPanel);
     }
+
+    protected abstract void buildUniqueButtons(JPanel buttonPanel);
 
     private void buildContentPane() {
         contentPane = new JPanel();
@@ -72,7 +65,7 @@ public class QuizCardPlayer extends ElementUI{
 
 
 
-    private void buildTextArea() {
+    protected void buildTextArea() {
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setLineWrap(true);
@@ -90,7 +83,6 @@ public class QuizCardPlayer extends ElementUI{
         JScrollPane jsp = new JScrollPane(textArea);
         jsp.setAlignmentX(Component.LEFT_ALIGNMENT);
         contentPane.add(BorderLayout.CENTER, jsp);
-
     }
 
     protected void close() {
@@ -111,47 +103,36 @@ public class QuizCardPlayer extends ElementUI{
     /**
      * toFront - brings this frame in the JVM to the front.
      */
-    void toFront() {
+    public void toFront() {
         SwingUtilities.invokeLater(frame::toFront);
     }
 
-    public void showResults() {
-        label.setText("Results:");
-        textArea.setText("You got " + deck.getNumCorrect() + " correct and " + deck.getNumWrong() + " wrong.");
-        showAnswerButton.setText("End");
-        showAnswerButton.setVisible(true);
-        showAnswerButton.requestFocusInWindow();
-        correctButton.setVisible(false);
-        wrongButton.setVisible(false);
-        deckIndex++;
-    }
 
-    private Runnable getAction() {
+
+    protected Runnable getAction() {
         if (deckIndex > deck.getQuizCardList().size())
             return QuizCardPlayer.this::close;
 
         if (deckIndex == deck.getQuizCardList().size())
             return this::showResults;
 
-        return isAnswerShown ? this::showNextCard : this::showAnswer;
+        return isAnswerShown ? this::showNextCard : this::submit;
     }
 
 
     //to be used as `invokeLater(this::showAnswer)` etc.
-    private void showAnswer() {
+    protected void submit() {
         label.setText("Answer:");
         textArea.setText(deck.getQuizCardList().get(deckIndex).getAnswer());
         isAnswerShown = true;
-        showAnswerButton.setVisible(false);
-        correctButton.setVisible(true);
-        correctButton.requestFocusInWindow();
-        wrongButton.setVisible(true);
-
+        submitButton.setVisible(false);
+        showAnswerSpecific();
         deckIndex++;
-
     }
 
-    private void showNextCardOrResults() {
+    protected abstract void showAnswerSpecific();
+
+    protected void showNextCardOrResults() {
         if (deckIndex < deck.getQuizCardList().size()) {
             this.showNextCard();
         } else {
@@ -159,14 +140,25 @@ public class QuizCardPlayer extends ElementUI{
         }
     }
 
-    private void showNextCard() {
+    protected void showNextCard() {
         label.setText("Question:");
         textArea.setText(deck.getQuizCardList().get(deckIndex).getQuestion());
         isAnswerShown = false;
-        showAnswerButton.setText("Show answer");
-        showAnswerButton.setVisible(true);
-        showAnswerButton.requestFocusInWindow();
-        correctButton.setVisible(false);
-        wrongButton.setVisible(false);
+        submitButton.setText(submit_text);
+        submitButton.setVisible(true);
+        submitButton.requestFocusInWindow();
+        hideFeedback();
     }
+
+    public void showResults() {
+        label.setText("Results:");
+        textArea.setText("You got " + deck.getNumCorrect() + " correct and " + deck.getNumWrong() + " wrong.");
+        submitButton.setText("End");
+        submitButton.setVisible(true);
+        submitButton.requestFocusInWindow();
+
+        deckIndex++;
+    }
+
+    protected abstract void hideFeedback();
 }

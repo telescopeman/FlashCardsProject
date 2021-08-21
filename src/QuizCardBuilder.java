@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 
 /** QuizCardBuilder - This class allows the user to create, edit and save a Deck of QuizCards.
  * @author Calculus5000, Caleb Copeland
+ * @since August 21 2021
  * */
 public class QuizCardBuilder extends ElementUI {
     private JButton button;
@@ -14,11 +15,11 @@ public class QuizCardBuilder extends ElementUI {
     private QuizCardPlayer quizCardPlayer;
 
 
+
     public QuizCardBuilder(Deck deck) {
         super("Quiz Card Builder", new Dimension(400, 400));
         this.deck = deck;
-        createQuizCardPlayer();
-
+        createQuizCardPlayer(MODE.FLASHCARDS);
     }
 
     public void build()
@@ -47,7 +48,7 @@ public class QuizCardBuilder extends ElementUI {
     }
 
     private void buildButtonPanel() {
-        button = new JButton("Add");
+        button = new JButton("Add Flashcard");
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.addActionListener(ev -> addCard());
         contentPane.add(button);
@@ -70,9 +71,11 @@ public class QuizCardBuilder extends ElementUI {
         file.add(SaveAs);
         file.add(Exit);
 
-        JMenu card = new JMenu("Deck");
-        card.add(ShuffleDeck);
-        card.add(Play);
+        JMenu card = new JMenu("Study");
+        //card.add(ShuffleDeck);
+        card.add(new Play(MODE.FLASHCARDS));
+        card.add(new Play(MODE.WRITE));
+        //card.add(Flashcards);
 
         jMenuBar.add(file);
         jMenuBar.add(card);
@@ -112,14 +115,21 @@ public class QuizCardBuilder extends ElementUI {
                 }
             }
         }else{
+            // Automatically closes the program if there's no changes to be saved.
             System.exit(0);
         }
     }
 
     /** createQuizCardPlayer - safely creates an instance of QuizCardPlayer, whilst allowing QuizCardPlayer to
-     * have a callback */
-    private void createQuizCardPlayer(){
-        quizCardPlayer = new QuizCardPlayer(deck,this); // registers the callback
+     * have a callback
+     * @param myMode The type of studying.
+     * */
+    private void createQuizCardPlayer(MODE myMode){
+        switch (myMode)
+        {
+            case FLASHCARDS: quizCardPlayer = new FlashcardsPlayer(deck, this); // registers the callback
+            case WRITE: quizCardPlayer = new WritePlayer(deck, this); // registers the callback
+        }
     }
 
     private void displayFrame() {
@@ -181,7 +191,7 @@ public class QuizCardBuilder extends ElementUI {
         return answerText;
     }
 
-    JTextArea getQuestionText() {
+    public JTextArea getQuestionText() {
         return questionText;
     }
 
@@ -223,7 +233,30 @@ public class QuizCardBuilder extends ElementUI {
         }
     };
 
-    private final Action Play = new AbstractAction("Begin test"){
+
+    enum MODE{
+        FLASHCARDS("Flashcards"),
+        WRITE("Write")
+        ;
+
+        String name;
+        MODE(String n) {
+            name = n;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    private class Play extends AbstractAction {
+        private final MODE myMode;
+        public Play(MODE mode) {
+            super(mode.toString());
+            myMode = mode;
+
+        }
         @Override
         public void actionPerformed(ActionEvent ev){
             System.out.println("play?" + deck.getQuizCardList().size());
@@ -241,12 +274,12 @@ public class QuizCardBuilder extends ElementUI {
                 } else {
                     deck.setIsTestRunning(true);
                     setTextAreaEditability(false);
-                    createQuizCardPlayer();
+                    createQuizCardPlayer(myMode);
                     quizCardPlayer.build();
                 }
             }
         }
-    };
+    }
 
     private final Action Save = new AbstractAction("Save"){
         @Override
