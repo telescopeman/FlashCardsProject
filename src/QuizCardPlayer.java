@@ -1,20 +1,22 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.*;
 
-/** QuizCardPlayer - This class allows the user to test themselves using a specific Deck of QuizCards.
- * @author Calculus5000
- * */
+import static javax.swing.SwingUtilities.invokeLater;
+
+/**
+ * QuizCardPlayer - This class allows the user to test themselves using a specific Deck of QuizCards.
+ *
+ * @author Calculus5000, abuzittin gillifirca
+ */
 public class QuizCardPlayer {
     private static final Dimension FRAME_SIZE = new Dimension(300, 300);
     private static final Dimension MINIMUM_FRAME_SIZE = new Dimension(200, 200);
 
     private int deckIndex;
     private boolean isAnswerShown;
-    private Deck deck;
+    private final Deck deck;
     private JButton correctButton, showAnswerButton, wrongButton;
     private JFrame frame;
     private JLabel label;
@@ -24,11 +26,11 @@ public class QuizCardPlayer {
     private QuizCardBuilder quizCardBuilder;
 
 
-    public QuizCardPlayer(Deck deck){
+    public QuizCardPlayer(Deck deck) {
         this.deck = deck;
     }
 
-    void build(){
+    void build() {
         SwingUtilities.invokeLater(
                 () -> {
                     buildFrame();
@@ -42,14 +44,21 @@ public class QuizCardPlayer {
         );
     }
 
-    private void buildButtonPanel(){
+    private void buildButtonPanel() {
         showAnswerButton = new JButton("Show answer");
-        showAnswerButton.addActionListener(new ButtonListener());
+        showAnswerButton.addActionListener(ev -> invokeLater(getAction()));
+
         correctButton = new JButton("Right");
-        correctButton.addActionListener(new CorrectButtonListener());
+        correctButton.addActionListener(ev -> {
+            deck.setNumCorrect(deck.getNumCorrect() + 1);
+            invokeLater(this::showNextCardOrResults);
+        });
         correctButton.setVisible(false);
         wrongButton = new JButton("Wrong");
-        wrongButton.addActionListener(new WrongButtonListener());
+        wrongButton.addActionListener(ev -> {
+            deck.setNumWrong(deck.getNumWrong() + 1);
+            invokeLater(this::showNextCardOrResults);
+        });
         wrongButton.setVisible(false);
 
         JPanel buttonPanel = new JPanel();
@@ -60,14 +69,14 @@ public class QuizCardPlayer {
         contentPane.add(BorderLayout.SOUTH, buttonPanel);
     }
 
-    private void buildContentPane(){
+    private void buildContentPane() {
         contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout());
         contentPane.setBorder(BorderFactory.createEmptyBorder(5, 15, 0, 15));
         frame.setContentPane(contentPane);
     }
 
-    private void buildFrame(){
+    private void buildFrame() {
         frame = new JFrame("Quiz card Player - " + deck.getFileName());
         frame.setMinimumSize(MINIMUM_FRAME_SIZE);
         frame.addWindowListener(
@@ -80,14 +89,14 @@ public class QuizCardPlayer {
         );
     }
 
-    private void buildLabel(){
+    private void buildLabel() {
         label = new JLabel("Question:");
         label.setFont(FontConstants.labelFont);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         contentPane.add(BorderLayout.NORTH, label);
     }
 
-    private void buildTextArea(){
+    private void buildTextArea() {
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setLineWrap(true);
@@ -100,7 +109,7 @@ public class QuizCardPlayer {
 
     }
 
-    private void closeFrame(){
+    private void closeFrame() {
         SwingUtilities.invokeLater(frame::dispose);
         deck.setIsTestRunning(false);
         deck.setNumCorrect(0);
@@ -109,102 +118,79 @@ public class QuizCardPlayer {
         quizCardBuilder.getQuestionText().requestFocusInWindow();
     }
 
-    private void displayFrame(){
+    private void displayFrame() {
         frame.setSize(FRAME_SIZE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
-    /** registerQuizCardBuilder - A callback function that allows an instance of QuizCardPlayer to pass info back to
-     * the specified instance of QuizCardBuilder. */
-    void registerQuizCardBuilder(QuizCardBuilder newQuizCardBuilder){
+    /**
+     * registerQuizCardBuilder - A callback function that allows an instance of QuizCardPlayer to pass info back to
+     * the specified instance of QuizCardBuilder.
+     */
+    void registerQuizCardBuilder(QuizCardBuilder newQuizCardBuilder) {
         quizCardBuilder = newQuizCardBuilder;
     }
 
-    /** toFront - brings this frame in the JVM to the front. */
-    void toFront(){
+    /**
+     * toFront - brings this frame in the JVM to the front.
+     */
+    void toFront() {
         SwingUtilities.invokeLater(frame::toFront);
     }
 
+    public void showResults() {
+        label.setText("Results:");
+        textArea.setText("You got " + deck.getNumCorrect() + " correct and " + deck.getNumWrong() + " wrong.");
+        showAnswerButton.setText("End");
+        showAnswerButton.setVisible(true);
+        showAnswerButton.requestFocusInWindow();
+        correctButton.setVisible(false);
+        wrongButton.setVisible(false);
+        deckIndex++;
+    }
 
-    // LISTENERS
-    private class CorrectButtonListener extends ButtonListener {
-        @Override
-        public void actionPerformed(ActionEvent ev){
-            deck.setNumCorrect(deck.getNumCorrect() + 1);
-            super.actionPerformed(ev);
+    private Runnable getAction() {
+        if (deckIndex > deck.getQuizCardList().size())
+            return QuizCardPlayer.this::closeFrame;
+
+        if (deckIndex == deck.getQuizCardList().size())
+            return this::showResults;
+
+        return isAnswerShown ? this::showNextCard : this::showAnswer;
+    }
+
+
+    //to be used as `invokeLater(this::showAnswer)` etc.
+    private void showAnswer() {
+        label.setText("Answer:");
+        textArea.setText(deck.getQuizCardList().get(deckIndex).getAnswer());
+        isAnswerShown = true;
+        showAnswerButton.setVisible(false);
+        correctButton.setVisible(true);
+        correctButton.requestFocusInWindow();
+        wrongButton.setVisible(true);
+
+        deckIndex++;
+
+    }
+
+    private void showNextCardOrResults() {
+        if (deckIndex < deck.getQuizCardList().size()) {
+            this.showNextCard();
+        } else {
+            this.showResults();
         }
     }
 
-    private class WrongButtonListener extends ButtonListener {
-        // TODO why is it possible to have a public method in a private class?
-        @Override
-        public void actionPerformed(ActionEvent ev){
-            deck.setNumWrong(deck.getNumWrong() + 1);
-            super.actionPerformed(ev);
-        }
-    }
-
-    private class ButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent ev){
-            if(deckIndex < deck.getQuizCardList().size()) {
-                if (isAnswerShown) {
-                    showNextCard();
-                } else {
-                    showAnswer();
-                }
-            }else if(deckIndex == deck.getQuizCardList().size()) {
-                showResults();
-            }else{
-                closeFrame();
-            }
-        }
-
-        private void showAnswer(){
-            SwingUtilities.invokeLater(
-                    () -> {
-                        label.setText("Answer:");
-                        textArea.setText(deck.getQuizCardList().get(deckIndex).getAnswer());
-                        isAnswerShown = true;
-                        showAnswerButton.setVisible(false);
-                        correctButton.setVisible(true);
-                        correctButton.requestFocusInWindow();
-                        wrongButton.setVisible(true);
-
-                        deckIndex++;
-                    }
-            );
-        }
-
-        private void showNextCard(){
-            SwingUtilities.invokeLater(
-                    () -> {
-                        label.setText("Question:");
-                        textArea.setText(deck.getQuizCardList().get(deckIndex).getQuestion());
-                        isAnswerShown = false;
-                        showAnswerButton.setText("Show answer");
-                        showAnswerButton.setVisible(true);
-                        showAnswerButton.requestFocusInWindow();
-                        correctButton.setVisible(false);
-                        wrongButton.setVisible(false);
-                    }
-            );
-        }
-
-        private void showResults(){
-            SwingUtilities.invokeLater(
-                    () -> {
-                        label.setText("Results:");
-                        textArea.setText("You got " + deck.getNumCorrect() + " correct and " + deck.getNumWrong() + " wrong.");
-                        showAnswerButton.setText("End");
-                        showAnswerButton.setVisible(true);
-                        showAnswerButton.requestFocusInWindow();
-                        correctButton.setVisible(false);
-                        wrongButton.setVisible(false);
-                        deckIndex++;
-                    }
-            );
-        }
+    private void showNextCard() {
+        label.setText("Question:");
+        textArea.setText(deck.getQuizCardList().get(deckIndex).getQuestion());
+        isAnswerShown = false;
+        showAnswerButton.setText("Show answer");
+        showAnswerButton.setVisible(true);
+        showAnswerButton.requestFocusInWindow();
+        correctButton.setVisible(false);
+        wrongButton.setVisible(false);
     }
 }

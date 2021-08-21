@@ -106,7 +106,7 @@ public class Deck {
         return numWrong;
     }
 
-    List<QuizCard> getQuizCardList(){
+    public List<QuizCard> getQuizCardList(){
         return quizCardList;
     }
 
