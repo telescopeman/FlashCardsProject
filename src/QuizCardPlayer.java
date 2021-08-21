@@ -1,7 +1,5 @@
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import javax.swing.*;
+import java.awt.*;
 
 import static javax.swing.SwingUtilities.invokeLater;
 
@@ -10,26 +8,20 @@ import static javax.swing.SwingUtilities.invokeLater;
  *
  * @author Calculus5000, abuzittin gillifirca, Caleb Copeland
  */
-public class QuizCardPlayer {
-    private static final Dimension FRAME_SIZE = new Dimension(300, 300);
-    private static final Dimension MINIMUM_FRAME_SIZE = new Dimension(200, 200);
+public class QuizCardPlayer extends ElementUI{
 
     private int deckIndex;
     private boolean isAnswerShown;
-    private final Deck deck;
     private JButton correctButton, showAnswerButton, wrongButton;
-    private JFrame frame;
-    private JLabel label;
-    private JPanel contentPane;
     private JTextArea textArea;
-
+    private final Dimension FRAME_SIZE = new Dimension(300, 300);
     private final QuizCardBuilder quizCardBuilder;
 
-
     public QuizCardPlayer(Deck deck, QuizCardBuilder quizCardBuilder) {
+        super("Quiz Card Player", new Dimension(200, 200));
         this.deck = deck;
         this.quizCardBuilder = quizCardBuilder; // registers the callback
-        build();
+        //build();
     }
 
     public void build() {
@@ -37,7 +29,7 @@ public class QuizCardPlayer {
                 () -> {
                     buildFrame();
                     buildContentPane();
-                    buildLabel();
+                    buildLabel("Question:");
                     buildTextArea();
                     buildButtonPanel();
                     displayFrame();
@@ -78,32 +70,22 @@ public class QuizCardPlayer {
         frame.setContentPane(contentPane);
     }
 
-    private void buildFrame() {
-        frame = new JFrame("Quiz card Player - " + deck.getFileName());
-        frame.setMinimumSize(MINIMUM_FRAME_SIZE);
-        frame.addWindowListener(
-                new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent e) {
-                        closeFrame();
-                    }
-                }
-        );
-    }
 
-    private void buildLabel() {
-        label = new JLabel("Question:");
-        label.setFont(FontConstants.labelFont);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        contentPane.add(BorderLayout.NORTH, label);
-    }
 
     private void buildTextArea() {
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setText(deck.getQuizCardList().get(0).getQuestion());
+        String question;
+        try {
+            question = deck.getQuizCardList().get(0).getQuestion();
+        }
+        catch (IndexOutOfBoundsException ex)
+        {
+            question = "";
+        }
+        textArea.setText(question);
         textArea.setFont(FontConstants.textAreaFont);
         JScrollPane jsp = new JScrollPane(textArea);
         jsp.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -111,7 +93,7 @@ public class QuizCardPlayer {
 
     }
 
-    private void closeFrame() {
+    protected void close() {
         SwingUtilities.invokeLater(frame::dispose);
         deck.setIsTestRunning(false);
         deck.resetNumCorrect();
@@ -146,7 +128,7 @@ public class QuizCardPlayer {
 
     private Runnable getAction() {
         if (deckIndex > deck.getQuizCardList().size())
-            return QuizCardPlayer.this::closeFrame;
+            return QuizCardPlayer.this::close;
 
         if (deckIndex == deck.getQuizCardList().size())
             return this::showResults;

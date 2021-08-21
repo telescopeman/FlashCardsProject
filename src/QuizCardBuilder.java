@@ -1,32 +1,36 @@
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /** QuizCardBuilder - This class allows the user to create, edit and save a Deck of QuizCards.
  * @author Calculus5000, Caleb Copeland
  * */
-public class QuizCardBuilder {
-    private Deck deck;
+public class QuizCardBuilder extends ElementUI {
     private JButton button;
     private final JFileChooser fileChooser = new JFileChooser();
-    private JFrame frame;
     private final JTextArea answerText = new JTextArea(), questionText = new JTextArea();
-    private JPanel panel;
-
     private QuizCardPlayer quizCardPlayer;
 
 
     public QuizCardBuilder(Deck deck) {
+        super("Quiz Card Builder", new Dimension(400, 400));
         this.deck = deck;
         createQuizCardPlayer();
+
+    }
+
+    public void build()
+    {
         SwingUtilities.invokeLater(
                 () -> {
                     buildFrame();
                     buildContentPane();
                     buildMenuBar();
-                    buildLabel(new JLabel("Question:"));
+                    buildLabel("Question:");
                     buildTextArea(questionText);
-                    buildLabel(new JLabel("Answer:"));
+                    buildLabel("Answer:");
                     buildTextArea(answerText);
                     buildButtonPanel();
                     displayFrame();
@@ -46,35 +50,17 @@ public class QuizCardBuilder {
         button = new JButton("Add");
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.addActionListener(ev -> addCard());
-        panel.add(button);
+        contentPane.add(button);
     }
 
     private void buildContentPane() {
-        panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 15, 0, 15));
-        frame.setContentPane(panel);
+        contentPane = new JPanel();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        contentPane.setBorder(BorderFactory.createEmptyBorder(5, 15, 0, 15));
+        frame.setContentPane(contentPane);
     }
 
-    private void buildFrame() {
-        frame = new JFrame("Quiz card builder - " + deck.getFileName());
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(400, 400));
-        frame.addWindowListener(
-                new WindowAdapter() {
-                    @Override
-                    public void windowClosing(WindowEvent e) {
-                        close();
-                    }
-                }
-        );
-    }
 
-    private void buildLabel(JLabel label) {
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        label.setFont(FontConstants.labelFont);
-        panel.add(label);
-    }
 
     private void buildMenuBar() {
         JMenuBar jMenuBar = new JMenuBar();
@@ -106,10 +92,10 @@ public class QuizCardBuilder {
         JScrollPane jsp = new JScrollPane(jTextArea);
         jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         jsp.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.add(jsp);
+        contentPane.add(jsp);
     }
 
-    private void close(){
+    protected void close(){
         if (deck.getIsModified()) {
             // Automatically closes the program if there's nothing to be saved.
             if(deck.getQuizCardList().size() == 0 && getQuestionText().getText().length() == 0
@@ -240,6 +226,7 @@ public class QuizCardBuilder {
     private final Action Play = new AbstractAction("Begin test"){
         @Override
         public void actionPerformed(ActionEvent ev){
+            System.out.println("play?" + deck.getQuizCardList().size());
             // Allows the user to open a file if no file is already open
             if(deck.getQuizCardList().size() == 0) {
                 openFile();
@@ -249,6 +236,7 @@ public class QuizCardBuilder {
             if(deck.getQuizCardList().size() > 0) {
                 if (deck.getIsTestRunning()) {
                     Toolkit.getDefaultToolkit().beep();
+                    System.out.println("bruh");
                     quizCardPlayer.toFront();
                 } else {
                     deck.setIsTestRunning(true);
