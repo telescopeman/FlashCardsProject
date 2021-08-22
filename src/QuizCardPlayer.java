@@ -34,7 +34,7 @@ public abstract class QuizCardPlayer extends ElementUI{
                 () -> {
                     buildFrame();
                     buildContentPane();
-                    buildLabel("Question:");
+                    contentPane.add(new EasyLabel("Question:"));
                     buildTextArea();
                     buildButtonPanel();
                     displayFrame();

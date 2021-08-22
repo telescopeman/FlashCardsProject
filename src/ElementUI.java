@@ -17,24 +17,21 @@ public abstract class ElementUI {
 
     private final Dimension MINIMUM_FRAME_SIZE;
 
+    protected static class EasyLabel extends JLabel {
+
+        protected EasyLabel(String text)
+        {
+            super(text);
+            setFont(FontConstants.labelFont);
+            setAlignmentX(Component.LEFT_ALIGNMENT);
+        }
+    }
+
+
     public ElementUI(String title, Dimension min_size)
     {
         windowTitle = title;
         MINIMUM_FRAME_SIZE = min_size;
-    }
-
-    protected void buildLabel(String text) {
-        label = new JLabel();
-        label.setFont(FontConstants.labelFont);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        contentPane.add(BorderLayout.NORTH, label);
-    }
-
-    private void buildContentPane(LayoutManager layout) {
-        contentPane = new JPanel();
-        contentPane.setLayout(layout);
-        contentPane.setBorder(BorderFactory.createEmptyBorder(5, 15, 0, 15));
-        frame.setContentPane(contentPane);
     }
 
     protected abstract void close();

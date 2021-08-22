@@ -1,5 +1,21 @@
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JTextArea;
+import javax.swing.JPanel;
+import javax.swing.BoxLayout;
+import javax.swing.SwingUtilities;
+import javax.swing.BorderFactory;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JOptionPane;
+
+import java.awt.Dimension;
+import java.awt.Component;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -29,9 +45,9 @@ public class QuizCardBuilder extends ElementUI {
                     buildFrame();
                     buildContentPane();
                     buildMenuBar();
-                    buildLabel("Question:");
+                    contentPane.add(new EasyLabel("Question:"));
                     buildTextArea(questionText);
-                    buildLabel("Answer:");
+                    contentPane.add(new EasyLabel("Answer:"));
                     buildTextArea(answerText);
                     buildButtonPanel();
                     displayFrame();
@@ -259,7 +275,6 @@ public class QuizCardBuilder extends ElementUI {
         }
         @Override
         public void actionPerformed(ActionEvent ev){
-            System.out.println("play?" + deck.getQuizCardList().size());
             // Allows the user to open a file if no file is already open
             if(deck.getQuizCardList().size() == 0) {
                 openFile();
@@ -269,7 +284,6 @@ public class QuizCardBuilder extends ElementUI {
             if(deck.getQuizCardList().size() > 0) {
                 if (deck.getIsTestRunning()) {
                     Toolkit.getDefaultToolkit().beep();
-                    System.out.println("bruh");
                     quizCardPlayer.toFront();
                 } else {
                     deck.setIsTestRunning(true);
