@@ -35,8 +35,8 @@ public class HomeMenu extends JFrame{
     {
         contentPane = c;
         contentPane.load();
-        setMinimumSize(contentPane.getMinimumFrameSize());
         setContentPane(contentPane);
+        setMinimumSize(contentPane.getMinimumFrameSize());
         refreshTitle();
     }
 
@@ -143,9 +143,9 @@ public class HomeMenu extends JFrame{
         }
 
         if(optionChosen != JOptionPane.CANCEL_OPTION && fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-            //deck = new Deck();
-            //deck.readFile(fileChooser.getSelectedFile().getAbsolutePath());
-            //setTitle(deck.getFileName());
+            deck = new Deck();
+            deck.readFile(fileChooser.getSelectedFile().getAbsolutePath());
+            setTitle(deck.getFileName());
             //setQuestionText(null);
             //setAnswerText(null);
             return;

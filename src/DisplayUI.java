@@ -62,10 +62,40 @@ public abstract class DisplayUI extends JPanel {
         return MINIMUM_FRAME_SIZE;
     }
 
+    protected JTextArea buildTextArea(String text,boolean isEditable) {
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(isEditable);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setText(text);
+        textArea.setFont(FontConstants.textAreaFont);
+        return textArea;
+    }
+
     /**
      * What to do when the window closes.
      */
-    public abstract void close();
+    public void close() {
+        if (getDeck().getIsModified()) {
+            // Automatically closes the program if there's nothing to be saved.
+            if (getDeck().getQuizCardList().size() == 0) {
+                System.exit(0);
+            }
+            else {
+                int optionChosen = JOptionPane.showConfirmDialog(this, "Do you want to save this deck?", "Save",
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (optionChosen == JOptionPane.YES_OPTION) {
+                    getMenu().save();
+                }
+                if (optionChosen != JOptionPane.CANCEL_OPTION) {
+                    System.exit(0);
+                }
+            }
+        }
+        else {
+            System.exit(0);
+        }
+    }
 
     protected static class EasyLabel extends JLabel {
 
