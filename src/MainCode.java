@@ -8,7 +8,7 @@ public class MainCode {
         q.go();
     }
     private void go(){
-        QuizCardBuilder qcb = new QuizCardBuilder(new Deck());
-        qcb.build();
+        HomeMenu qcb = new HomeMenu();
+        //qcb.build();
     }
 }
