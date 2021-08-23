@@ -10,7 +10,7 @@ public class QuizCardBuilder extends DisplayUI {
     private final JTextArea answerText = new JTextArea(), questionText = new JTextArea();
 
 
-    public QuizCardBuilder(HomeMenu menu) {
+    public QuizCardBuilder(MainFrame menu) {
         super(menu,"Quiz Card Builder", new Dimension(400, 400));
         //createQuizCardPlayer(MODE.FLASHCARDS);
     }

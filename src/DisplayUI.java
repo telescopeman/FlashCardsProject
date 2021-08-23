@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 public abstract class DisplayUI extends JPanel {
     private final String windowTitle;
     private final Dimension MINIMUM_FRAME_SIZE;
-    private final HomeMenu menu;
+    private final MainFrame menu;
 
     protected static class EasyButton extends JButton  {
         public EasyButton(String str, float alignment) {
@@ -43,7 +43,7 @@ public abstract class DisplayUI extends JPanel {
         }
     }
 
-    public HomeMenu getMenu()
+    public MainFrame getMenu()
     {
         return menu;
     }
@@ -108,7 +108,7 @@ public abstract class DisplayUI extends JPanel {
         }
     }
 
-    public DisplayUI(HomeMenu menu, String title, Dimension min_size)
+    public DisplayUI(MainFrame menu, String title, Dimension min_size)
     {
         this.menu = menu;
         windowTitle = title;

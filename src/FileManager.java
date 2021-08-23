@@ -7,13 +7,13 @@ import java.io.*;
  */
 public abstract class FileManager {
     private final static String EXTENSION = "cardset";
-    private static HomeMenu homeMenu;
+    private static MainFrame homeMenu;
     private final static JFileChooser fileChooser = new JFileChooser();
 
     private static final String QUIZ_CARD_TERMINATOR = "\n29rje2r9\n",
             QUIZ_CARD_SEPARATOR = "\te23bf0hj\t";
 
-    public static void initialize(HomeMenu menu)
+    public static void initialize(MainFrame menu)
     {
         fileChooser.setFileFilter(new FileNameExtensionFilter("Flashcards", EXTENSION));
         homeMenu = menu;

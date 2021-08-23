@@ -8,7 +8,7 @@ public class MainCode {
         q.go();
     }
     private void go(){
-        HomeMenu qcb = new HomeMenu();
+        MainFrame qcb = new MainFrame();
         //qcb.build();
     }
 }

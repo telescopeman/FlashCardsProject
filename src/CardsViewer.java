@@ -4,7 +4,7 @@ import java.awt.*;
 public class CardsViewer extends DisplayUI {
 
     JScrollPane scrollPane = new JScrollPane(this);
-    public CardsViewer(HomeMenu menu) {
+    public CardsViewer(MainFrame menu) {
         super(menu, "StudyTool", new Dimension(400,800));
     }
 

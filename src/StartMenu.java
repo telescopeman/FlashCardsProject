@@ -1,7 +1,7 @@
 import java.awt.*;
 
 public class StartMenu extends DisplayUI {
-    public StartMenu(HomeMenu menu) {
+    public StartMenu(MainFrame menu) {
         super(menu,"StudyTool", new Dimension(400,800));
     }
 

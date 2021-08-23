@@ -5,7 +5,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
-public class HomeMenu extends JFrame{
+public class MainFrame extends JFrame{
     private DisplayUI contentPane;
     protected Deck deck;
     protected boolean isTestRunning = false;
@@ -21,7 +21,7 @@ public class HomeMenu extends JFrame{
     }
 
 
-    public HomeMenu() {
+    public MainFrame() {
         this.deck = new Deck();
         FileManager.initialize(this);
         loadDisplay(new StartMenu((this)));
@@ -55,10 +55,6 @@ public class HomeMenu extends JFrame{
     public void close() {
         contentPane.close();
     }
-
-
-
-
 
 
     enum MODE{
