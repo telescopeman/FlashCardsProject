@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Dimension;
 
 public class StartMenu extends DisplayUI {
     public StartMenu(MainFrame menu) {

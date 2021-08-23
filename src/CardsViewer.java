@@ -1,5 +1,7 @@
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JScrollPane;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.BorderLayout;
 
 public class CardsViewer extends DisplayUI {
 
@@ -9,7 +11,7 @@ public class CardsViewer extends DisplayUI {
     }
 
     public CardsViewer(DisplayUI menu) {
-        super(menu.getMenu(), "StudyTool", new Dimension(400,800));
+        this(menu.getMenu());
     }
 
     private class CardDisplay extends JPanel
