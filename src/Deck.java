@@ -14,7 +14,6 @@ public class Deck {
     private final List<QuizCard> quizCardList = new ArrayList<>();
     private String fileName = "Untitled";
     private boolean isModified;
-    private boolean isTestRunning;
     private int numCorrect,numWrong;
 
 
@@ -61,10 +60,6 @@ public class Deck {
         return isModified;
     }
 
-    public boolean getIsTestRunning(){
-        return isTestRunning;
-    }
-
     public int getNumCorrect(){
         return numCorrect;
     }
@@ -98,10 +93,6 @@ public class Deck {
 
     public void setIsModified(boolean newValue){
         isModified = newValue;
-    }
-
-    public void setIsTestRunning(boolean newValue){
-        isTestRunning = newValue;
     }
 
     public void incrementNumCorrect()

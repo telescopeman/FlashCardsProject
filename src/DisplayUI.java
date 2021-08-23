@@ -12,7 +12,7 @@ public abstract class DisplayUI extends JPanel {
     private final Dimension MINIMUM_FRAME_SIZE;
     private final HomeMenu menu;
 
-    protected class EasyButton extends JButton  {
+    protected static class EasyButton extends JButton  {
         public EasyButton(String str, float alignment) {
             super(str);
             setAlignmentY(alignment);

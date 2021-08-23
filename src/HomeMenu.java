@@ -8,6 +8,17 @@ import java.io.IOException;
 public class HomeMenu extends JFrame{
     private DisplayUI contentPane;
     protected Deck deck;
+    protected boolean isTestRunning = false;
+
+    private boolean getIsTestRunning()
+    {
+        return isTestRunning;
+    }
+
+    private void setIsTestRunning(boolean i)
+    {
+        isTestRunning = i;
+    }
 
 
     public HomeMenu() {
@@ -55,7 +66,7 @@ public class HomeMenu extends JFrame{
         WRITE("Write")
         ;
 
-        String name;
+        final String name;
         MODE(String n) {
             name = n;
         }
@@ -86,11 +97,11 @@ public class HomeMenu extends JFrame{
 
             // Prevents window from popping up if there's no QuizCards to use
             if(deck.getQuizCardList().size() > 0) {
-                if (deck.getIsTestRunning()) {
+                if (getIsTestRunning()) {
                     Toolkit.getDefaultToolkit().beep();
                     //quizCardPlayer.toFront();
                 } else {
-                    deck.setIsTestRunning(true);
+                    setIsTestRunning(true);
                     //setTextAreaEditability(false);
                     //createQuizCardPlayer(myMode);
                     //quizCardPlayer.build();
