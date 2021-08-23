@@ -23,7 +23,7 @@ public class MainFrame extends JFrame{
 
     public MainFrame() {
         this.deck = new Deck();
-        FileManager.initialize(this);
+        FileManager.initialize();
         loadDisplay(new StartMenu((this)));
 
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -107,7 +107,7 @@ public class MainFrame extends JFrame{
     }
 
     private void openFile() throws IOException {
-        deck = FileManager.openFile(deck);
+        deck = FileManager.openFile(deck,this);
         refresh();
         System.out.println(deck);
     }
@@ -176,7 +176,7 @@ public class MainFrame extends JFrame{
     public final Action Save = new AbstractAction("Save"){
         @Override
         public void actionPerformed(ActionEvent ev){
-            FileManager.save(deck);
+            FileManager.save(deck, SwingUtilities.getWindowAncestor(getJMenuBar()));
         }
     };
 
@@ -189,7 +189,7 @@ public class MainFrame extends JFrame{
     private final Action SaveAs = new AbstractAction("Save as...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            FileManager.saveAs(deck);
+            FileManager.saveAs(deck,SwingUtilities.getWindowAncestor(getJMenuBar()));
             refreshTitle();
         }
     };

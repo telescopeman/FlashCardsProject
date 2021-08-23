@@ -1,26 +1,35 @@
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.*;
+import java.awt.Window;
+import java.io.File;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 /**
- * @author Calculus5000, Caleb Copeland, baeldung
+ * @author Calculus5000, Caleb Copeland
  */
-public abstract class FileManager {
-    private final static String EXTENSION = "cardset";
-    private static MainFrame homeMenu;
-    private final static JFileChooser fileChooser = new JFileChooser();
+public class FileManager extends JFileChooser {
+    private static final JFileChooser fileChooser = new JFileChooser();
+    private static final String
+            QUIZ_CARD_TERMINATOR = "\n29rje2r9\n",
+            QUIZ_CARD_SEPARATOR = "\te23bf0hj\t",
+            CARDSET_EXTENSION = "cardset";
 
-    private static final String QUIZ_CARD_TERMINATOR = "\n29rje2r9\n",
-            QUIZ_CARD_SEPARATOR = "\te23bf0hj\t";
 
-    public static void initialize(MainFrame menu)
+    /**
+     * Must be run before any other methods can be called.
+     */
+    public static void initialize()
     {
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Flashcards", EXTENSION));
-        homeMenu = menu;
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Flashcards", CARDSET_EXTENSION));
     }
 
     /** saveAs - User gets to choose the filename that stores the current Deck */
-    public static void saveAs(Deck deck){
+    public static void saveAs(Deck deck, Window homeMenu){
         if(fileChooser.showSaveDialog(homeMenu) == JFileChooser.APPROVE_OPTION) {
             saveHelper(deck, fileChooser.getSelectedFile().getAbsolutePath());
         }
@@ -28,9 +37,9 @@ public abstract class FileManager {
 
     /** save - Saves the current Deck under the same name, if previously saved. If the Deck is new,
      * then saveAs is invoked */
-    public static void save(Deck deck){
+    public static void save(Deck deck, Window homeMenu){
         if(deck.getFileName().equals("Untitled")){
-            saveAs(deck);
+            saveAs(deck, homeMenu);
         }else{
             saveHelper(deck, deck.getFileLocation());
         }
@@ -63,17 +72,17 @@ public abstract class FileManager {
         String newLocation;
         if (fileLocation.contains("."))
         {
-            if (fileLocation.substring(fileLocation.lastIndexOf(".")+1).equals(EXTENSION))
+            if (fileLocation.substring(fileLocation.lastIndexOf(".")+1).equals(CARDSET_EXTENSION))
             {
                 newLocation = fileLocation;
             }
             else {
-                newLocation = fileLocation.substring(0,fileLocation.lastIndexOf(".") + 1) + EXTENSION;
+                newLocation = fileLocation.substring(0,fileLocation.lastIndexOf(".") + 1) + CARDSET_EXTENSION;
             }
         }
         else
         {
-            newLocation = fileLocation + "." + EXTENSION;
+            newLocation = fileLocation + "." + CARDSET_EXTENSION;
         }
         return newLocation;
     }
@@ -107,13 +116,14 @@ public abstract class FileManager {
     }
 
     /** openFile - opens a saved Deck */
-    public static Deck openFile(Deck current_deck) throws IOException {
+    public static Deck openFile(Deck current_deck, Window homeMenu) throws IOException {
         int optionChosen = JOptionPane.YES_OPTION;
         if(current_deck.getIsModified()){
-            optionChosen = JOptionPane.showConfirmDialog(homeMenu, "Do you want to save this deck before " +
-                    "opening another?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+            optionChosen = JOptionPane.showConfirmDialog(homeMenu,
+                    "Do you want to save this deck before opening another?",
+                    "Save", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
             if(optionChosen == JOptionPane.YES_OPTION){
-                save(current_deck);
+                save(current_deck, homeMenu);
             }
         }
 

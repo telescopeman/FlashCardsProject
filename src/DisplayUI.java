@@ -1,5 +1,10 @@
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JOptionPane;
+import javax.swing.JLabel;
+import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -86,7 +91,7 @@ public abstract class DisplayUI extends JPanel {
                 int optionChosen = JOptionPane.showConfirmDialog(this, "Do you want to save this deck?", "Save",
                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (optionChosen == JOptionPane.YES_OPTION) {
-                    FileManager.save(getDeck());
+                    FileManager.save(getDeck(),getMenu());
                 }
                 if (optionChosen != JOptionPane.CANCEL_OPTION) {
                     System.exit(0);
