@@ -9,9 +9,9 @@ public class StartMenu extends DisplayUI {
 
     @Override
     protected void buildContent() {
-        System.out.println("yyyy");
+        //System.out.println("yyyy");
         add(new Portal("Add Flashcards", new QuizCardBuilder(this)));
         add(new Portal("View Flashcards", new CardsViewer(this)));
-        setBackground(Color.BLACK);
+        //setBackground(Color.BLACK);
     }
 }

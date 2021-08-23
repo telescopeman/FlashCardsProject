@@ -3,16 +3,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 public class HomeMenu extends JFrame{
-    private final JFileChooser fileChooser = new JFileChooser();
     private DisplayUI contentPane;
     protected Deck deck;
 
+
     public HomeMenu() {
         this.deck = new Deck();
+        FileManager.initialize(this);
         loadDisplay(new StartMenu((this)));
-
 
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         buildMenuBar();
@@ -37,35 +38,17 @@ public class HomeMenu extends JFrame{
         contentPane.load();
         setContentPane(contentPane);
         setMinimumSize(contentPane.getMinimumFrameSize());
-        refreshTitle();
+        refresh();
     }
 
     public void close() {
         contentPane.close();
-        //invokeLater(contentPane.close());
     }
 
 
-    /** saveAs - User gets to choose the filename that stores the current Deck */
-    private void saveAs(){
-        if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            deck.save(fileChooser.getSelectedFile().getAbsolutePath());
-            deck.setFileName(fileChooser.getSelectedFile().getName());
-            setTitle(deck.getFileName());
-            deck.setIsModified(false);
-        }
-    }
 
-    /** save - Saves the current Deck under the same name, if previously saved. If the Deck is new,
-     * then saveAs is invoked */
-    public void save(){
-        if(deck.getFileName().equals("Untitled")){
-            saveAs();
-        }else{
-            deck.save(deck.getFileLocation());
-            deck.setIsModified(false);
-        }
-    }
+
+
 
     enum MODE{
         FLASHCARDS("Flashcards"),
@@ -94,7 +77,11 @@ public class HomeMenu extends JFrame{
         public void actionPerformed(ActionEvent ev){
             // Allows the user to open a file if no file is already open
             if(deck.getQuizCardList().size() == 0) {
-                openFile();
+                try {
+                    openFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             // Prevents window from popping up if there's no QuizCards to use
@@ -110,6 +97,12 @@ public class HomeMenu extends JFrame{
                 }
             }
         }
+    }
+
+    private void openFile() throws IOException {
+        deck = FileManager.openFile(deck);
+        refresh();
+        System.out.println(deck);
     }
 
     private void buildMenuBar() {
@@ -131,25 +124,13 @@ public class HomeMenu extends JFrame{
         setJMenuBar(jMenuBar);
     }
 
-    /** openFile - opens a saved Deck */
-    private void openFile(){
-        int optionChosen = JOptionPane.YES_OPTION;
-        if(deck.getIsModified()){
-            optionChosen = JOptionPane.showConfirmDialog(this, "Do you want to save this deck before " +
-                    "opening another?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
-            if(optionChosen == JOptionPane.YES_OPTION){
-                save();
-            }
-        }
 
-        if(optionChosen != JOptionPane.CANCEL_OPTION && fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-            deck = new Deck();
-            deck.readFile(fileChooser.getSelectedFile().getAbsolutePath());
-            setTitle(deck.getFileName());
-            //setQuestionText(null);
-            //setAnswerText(null);
-            return;
-        }
+
+    private void refresh()
+    {
+        contentPane.load();
+        refreshTitle();
+        repaint();
     }
 
 //    /** createQuizCardPlayer - safely creates an instance of QuizCardPlayer, whilst allowing QuizCardPlayer to
@@ -177,14 +158,18 @@ public class HomeMenu extends JFrame{
     public final Action Open = new AbstractAction("Open"){
         @Override
         public void actionPerformed(ActionEvent ev){
-            openFile();
+            try {
+                openFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     };
 
     public final Action Save = new AbstractAction("Save"){
         @Override
         public void actionPerformed(ActionEvent ev){
-            save();
+            FileManager.save(deck);
         }
     };
 
@@ -197,7 +182,8 @@ public class HomeMenu extends JFrame{
     private final Action SaveAs = new AbstractAction("Save as...") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            saveAs();
+            FileManager.saveAs(deck);
+            refreshTitle();
         }
     };
 

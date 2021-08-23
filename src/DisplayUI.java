@@ -32,6 +32,7 @@ public abstract class DisplayUI extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                //System.out.print(e.toString());
                 switchPage(destination);
             }
         }
@@ -85,7 +86,7 @@ public abstract class DisplayUI extends JPanel {
                 int optionChosen = JOptionPane.showConfirmDialog(this, "Do you want to save this deck?", "Save",
                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (optionChosen == JOptionPane.YES_OPTION) {
-                    getMenu().save();
+                    FileManager.save(getDeck());
                 }
                 if (optionChosen != JOptionPane.CANCEL_OPTION) {
                     System.exit(0);
