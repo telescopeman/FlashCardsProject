@@ -1,5 +1,5 @@
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.UIManager;
+import java.awt.Font;
 
 /** FontConstants - Class used to set the fonts
  * @since August 21 2021
